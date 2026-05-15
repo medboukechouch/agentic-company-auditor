@@ -128,7 +128,11 @@ def reporting_node(state: AuditState, llm: ChatGoogleGenerativeAI) -> AuditState
         f"Proposed use cases: {state['proposed_use_cases']}"
     )
     response = llm.invoke(prompt)
-    report = AuditReport.model_validate_json(_to_text(response.content))
+    raw = _to_text(response.content).strip()
+    raw = raw.removeprefix("```json").removeprefix("```").strip()
+    if raw.endswith("```"):
+        raw = raw.removesuffix("```").strip()
+    report = AuditReport.model_validate_json(raw)
     return {**state, "final_report": report.model_dump_json(ensure_ascii=False)}
 
 
@@ -157,4 +161,3 @@ def build_compiled_graph(config: LLMConfig | None = None):
     return graph.compile()
 
 
-compiled_graph = build_compiled_graph()

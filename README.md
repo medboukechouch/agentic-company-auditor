@@ -123,7 +123,7 @@ This design makes the API directly consumable by any frontend without additional
 | Layer | Technology |
 |---|---|
 | Orchestration | LangGraph 0.2+ |
-| LLM | Google Gemini 1.5 Flash (`langchain-google-genai`) |
+| LLM | Google Gemini Flash Latest (`langchain-google-genai`) |
 | Web Search | DuckDuckGo (`langchain-community`) |
 | Output Validation | Pydantic v2 |
 | API | FastAPI + StreamingResponse (SSE) |
@@ -135,14 +135,14 @@ This design makes the API directly consumable by any frontend without additional
 ## Project Structure
 
 ```
-converteo-agentic-poc/
+agentic-company-auditor/
 ├── graph.py          # LangGraph StateGraph — nodes, edges, conditional logic
 ├── main.py           # FastAPI app — SSE endpoint, lifespan, health check
 ├── test_api.py       # pytest — endpoint tests with mocked LLM
 ├── Dockerfile        # python:3.11-slim, non-root user
 ├── docker-compose.yml
 ├── requirements.txt
-└── .env              # GOOGLE_API_KEY (not committed)
+└── .env.example      # GOOGLE_API_KEY template (not committed)
 ```
 
 ---
@@ -153,8 +153,8 @@ converteo-agentic-poc/
 
 ```bash
 # 1. Clone and install
-git clone https://github.com/medboukechouch/converteo-langgraph-poc
-cd converteo-langgraph-poc
+git clone https://github.com/medboukechouch/agentic-company-auditor
+cd agentic-company-auditor
 pip install -r requirements.txt
 
 # 2. Set your API key

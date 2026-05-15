@@ -10,6 +10,14 @@ from pydantic import BaseModel, Field, ValidationError
 from graph import AuditState, build_compiled_graph
 
 
+NODE_KEYS = {
+    "research": ["company_context"],
+    "validation": ["retry_count"],
+    "ideation": ["proposed_use_cases"],
+    "reporting": ["final_report"],
+}
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     app.state.graph = build_compiled_graph()
@@ -40,13 +48,6 @@ async def audit(request: AuditRequest, req: Request):
 
     async def event_stream():
         try:
-            NODE_KEYS = {
-                "research": ["company_context"],
-                "validation": ["retry_count"],
-                "ideation": ["proposed_use_cases"],
-                "reporting": ["final_report"],
-            }
-
             async for event in req.app.state.graph.astream_events(initial_state, version="v1"):
                 event_type = event.get("event")
                 if event_type != "on_chain_end":
