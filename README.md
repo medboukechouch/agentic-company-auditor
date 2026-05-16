@@ -1,4 +1,5 @@
 # 🔍 Agentic Company Auditor
+![CI](https://github.com/medboukechouch/agentic-company-auditor/actions/workflows/ci.yml/badge.svg)
 
 > An agentic AI system that researches any company in real-time and generates a structured Data/AI consulting audit — powered by **LangGraph**, **Gemini**, and **FastAPI**.
 
