@@ -1,30 +1,31 @@
 from __future__ import annotations
 
 import json
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from fastapi.testclient import TestClient
 
 import main
 
 
-def make_mock_event(node_name: str, output: dict) -> dict:
-    return {
+async def mock_astream_events(initial_state, version):
+    yield {
         "event": "on_chain_end",
-        "name": node_name,
-        "data": {"output": output},
+        "name": "research",
+        "data": {"output": {"company_context": "Acme is a tech company."}},
+    }
+    yield {
+        "event": "on_chain_end",
+        "name": "reporting",
+        "data": {"output": {"final_report": '{"company_name": "Acme"}'}},
     }
 
 
-async def mock_astream_events(initial_state, version):
-    yield make_mock_event("research", {"company_context": "Context"})
-    yield make_mock_event("reporting", {"final_report": '{"company_name": "Acme"}'})
-
-
 def test_audit_endpoint_streams_events() -> None:
-    with patch.object(main.app.state, "graph") as mock_graph:
-        mock_graph.astream_events = mock_astream_events
+    mock_graph = MagicMock()
+    mock_graph.astream_events = mock_astream_events
 
+    with patch("main.build_compiled_graph", return_value=mock_graph):
         with TestClient(main.app) as client:
             response = client.post("/api/v1/audit", json={"company_name": "Acme"})
 
@@ -37,6 +38,9 @@ def test_audit_endpoint_streams_events() -> None:
 
 
 def test_audit_endpoint_validation_error() -> None:
-    with TestClient(main.app) as client:
-        response = client.post("/api/v1/audit", json={"company_name": "A"})
+    mock_graph = MagicMock()
+
+    with patch("main.build_compiled_graph", return_value=mock_graph):
+        with TestClient(main.app) as client:
+            response = client.post("/api/v1/audit", json={"company_name": "A"})
     assert response.status_code == 422
