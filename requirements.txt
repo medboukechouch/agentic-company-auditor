@@ -5,3 +5,5 @@ langchain-google-genai>=1.0.5
 langgraph>=0.2.28
 pydantic>=2.7.0
 uvicorn>=0.30.0
+pytest
+httpx
